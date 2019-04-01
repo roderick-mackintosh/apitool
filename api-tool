@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+export PYTHONPATH="/usr/lib/python3.6/site-packages"
+
+if command -v python3.6 >/dev/null 2>&1; then
+  python3.6 -m apitools "$@"
+else
+  python3 -m apitools "$@"
+fi

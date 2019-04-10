@@ -2,38 +2,63 @@
 import argparse
 import sys
 
-def notify(args):
-    print("Notify login %s" % args.login)
 
+class ApiToolParser(object):
+    """ apitool class """
 
-def schedule(args):
-    print("Notify login %s" % args.login)
+    def __init__(self, args):
+        """
+        Initialiser function
+        :param argv: command line argument
+        """
+        self.parser = argparse.ArgumentParser(prog='api-tool')
 
+        subparsers = self.parser.add_subparsers(
+            help='sub-command help',
+            dest='subparser_name'
+        )
 
-def create_parser():
-    parser = argparse.ArgumentParser(prog='api-tool')
+        self.notify_parser = subparsers.add_parser(
+            'notify',
+            help="Send notification"
+        )
+        self.notify_parser.add_argument('-l', dest='login', help='Login help')
+        self.notify_parser.set_defaults(func=self.notify)
 
-    subparsers = parser.add_subparsers(
-        help='sub-command help',
-        dest='subparser_name'
-    )
+        self.push_parser = subparsers.add_parser(
+            'push',
+            help="push notification"
+        )
+        self.push_parser.add_argument('-l', dest='login', help='Login help')
+        self.push_parser.set_defaults(func=self.push)
 
-    notify_parser = subparsers.add_parser(
-        'notify',
-        help="Send patching notification"
-    )
-    notify_parser.add_argument('-l', dest='login', help='Login help')
-    notify_parser.set_defaults(func=notify)
+        if len(sys.argv) == 1:
+            self.parser.print_help(sys.stderr)
+            sys.exit(1)
 
-    schedule_parser = subparsers.add_parser(
-        'schedule',
-        help="Schedule patching"
-    )
-    schedule_parser.add_argument('-l', dest='login', help='Login help')
-    schedule_parser.set_defaults(func=schedule)
+        self._args = self.parser.parse_args()
+        self._args.func(self._args)
 
-    if len(sys.argv) == 1:
-        parser.print_help(sys.stderr)
-        sys.exit(1)
+    def notify(self, args):
+        """
+        Notify function
+        :param args: command line arguments
+        :return: tba
+        """
+        if args.login:
+            print("Notify login %s" % args.login)
+        else:
+            self.notify_parser.print_help(sys.stderr)
+            sys.exit(1)
 
-    return parser
+    def push(self, args):
+        """
+        Push function
+        :param args: command line arguments
+        :return: tba
+        """
+        if args.login:
+            print("Push login %s" % args.login)
+        else:
+            self.push_parser.print_help(sys.stderr)
+            sys.exit(1)
